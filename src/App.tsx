@@ -3,6 +3,7 @@ import { VehicleService, Vehicle } from './services/vehiclesService.ts';
 import styles from './App.module.css';
 import { Search } from './components/Search/Search.tsx';
 import { Main } from './components/Main/Main.tsx';
+import { LOCAL_STORAGE_KEYS } from './constants/localStorage/localStorage.ts';
 
 interface AppState {
   vehicles: Vehicle[];
@@ -23,7 +24,7 @@ class App extends Component<object, AppState> {
       loading: false,
       error: null,
       page: 1,
-      searchQuery: '',
+      searchQuery: localStorage.getItem(LOCAL_STORAGE_KEYS.SEARCH_QUERY) || '',
       initialized: false,
     };
 
@@ -61,12 +62,12 @@ class App extends Component<object, AppState> {
   };
 
   render() {
-    const { vehicles, loading, error, initialized } = this.state;
+    const { vehicles, loading, error, initialized, searchQuery } = this.state;
 
     return (
       <div className={styles.appContainer}>
         <h1 className={styles.title}>Vehicle Explorer</h1>
-        <Search onSearch={this.handleSearch} />
+        <Search onSearch={this.handleSearch} initialQuery={searchQuery} />
         {loading && <p>Loading vehicles...</p>}
         {error && <p className={styles.error}>{error}</p>}
         {initialized && <Main vehicles={vehicles} />}

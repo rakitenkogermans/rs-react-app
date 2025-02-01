@@ -1,8 +1,10 @@
 import { ChangeEvent, Component } from 'react';
 import styles from './Search.module.css';
+import { LOCAL_STORAGE_KEYS } from '../../constants/localStorage/localStorage.ts';
 
 interface SearchProps {
   onSearch: (query: string) => void;
+  initialQuery: string;
 }
 
 interface SearchState {
@@ -12,7 +14,7 @@ interface SearchState {
 class Search extends Component<SearchProps, SearchState> {
   constructor(props: SearchProps) {
     super(props);
-    this.state = { query: '' };
+    this.state = { query: this.props.initialQuery };
   }
 
   handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -20,7 +22,10 @@ class Search extends Component<SearchProps, SearchState> {
   };
 
   handleSearch = () => {
-    this.props.onSearch(this.state.query);
+    const { query } = this.state;
+    const trimmedSearchQuery = query.trim();
+    localStorage.setItem(LOCAL_STORAGE_KEYS.SEARCH_QUERY, trimmedSearchQuery);
+    this.props.onSearch(trimmedSearchQuery);
   };
 
   render() {
