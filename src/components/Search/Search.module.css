@@ -23,3 +23,17 @@
 .searchButton:hover {
   background-color: #0056b3;
 }
+
+
+.errorButton {
+  padding: 8px 12px;
+  background-color: #ff3b3b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.errorButton:hover {
+  background-color: #ff3b3b;
+}

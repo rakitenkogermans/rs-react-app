@@ -9,12 +9,13 @@ interface SearchProps {
 
 interface SearchState {
   query: string;
+  hasError: boolean;
 }
 
 class Search extends Component<SearchProps, SearchState> {
   constructor(props: SearchProps) {
     super(props);
-    this.state = { query: this.props.initialQuery };
+    this.state = { query: this.props.initialQuery, hasError: false };
   }
 
   handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -26,6 +27,15 @@ class Search extends Component<SearchProps, SearchState> {
     const trimmedSearchQuery = query.trim();
     localStorage.setItem(LOCAL_STORAGE_KEYS.SEARCH_QUERY, trimmedSearchQuery);
     this.props.onSearch(trimmedSearchQuery);
+  };
+
+  onClickErrorBtn = () => {
+    this.setState({ hasError: true });
+  };
+
+  triggerError = () => {
+    throw new Error('This is a test error!');
+    return 'Test error';
   };
 
   render() {
@@ -41,6 +51,10 @@ class Search extends Component<SearchProps, SearchState> {
         <button onClick={this.handleSearch} className={styles.searchButton}>
           Search
         </button>
+        <button onClick={this.onClickErrorBtn} className={styles.errorButton}>
+          Trigger Error
+        </button>
+        {this.state.hasError && this.triggerError()}
       </div>
     );
   }
