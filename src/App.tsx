@@ -1,35 +1,68 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
+import { Component } from 'react';
+import { VehicleService, Vehicle } from './services/vehiclesService.ts';
+import styles from './App.module.css';
 
-function App() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
+interface AppState {
+  vehicles: Vehicle[];
+  loading: boolean;
+  error: string | null;
+  page: number;
+  searchQuery: string;
 }
 
-export default App;
+class App extends Component<object, AppState> {
+  private vehicleService: VehicleService;
+
+  constructor(props: object) {
+    super(props);
+    this.state = {
+      vehicles: [],
+      loading: false,
+      error: null,
+      page: 1,
+      searchQuery: '',
+    };
+
+    this.vehicleService = new VehicleService();
+  }
+
+  componentDidMount() {
+    this.loadVehicles();
+  }
+
+  loadVehicles = async () => {
+    const { page, searchQuery } = this.state;
+    this.setState({ loading: true, error: null });
+
+    try {
+      const data = await this.vehicleService.getVehicles(page, searchQuery);
+      this.setState({ vehicles: data.results, loading: false });
+    } catch (error) {
+      let message;
+      if (error instanceof Error) {
+        message = error.message;
+      } else {
+        message = String(error);
+      }
+      this.setState({ error: message, loading: false });
+    }
+  };
+
+  handleSearch = (query: string) => {
+    this.setState({ searchQuery: query, page: 1 }, this.loadVehicles);
+  };
+
+  render() {
+    const { loading, error } = this.state;
+
+    return (
+      <div className={styles.appContainer}>
+        <h1 className={styles.title}>Vehicle Explorer</h1>
+        {loading && <p>Loading vehicles...</p>}
+        {error && <p className={styles.error}>{error}</p>}
+      </div>
+    );
+  }
+}
+
+export { App };
