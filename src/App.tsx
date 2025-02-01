@@ -4,6 +4,7 @@ import styles from './App.module.css';
 import { Search } from './components/Search/Search.tsx';
 import { Main } from './components/Main/Main.tsx';
 import { LOCAL_STORAGE_KEYS } from './constants/localStorage/localStorage.ts';
+import { Loader } from './components/Loader/Loader.tsx';
 
 interface AppState {
   vehicles: Vehicle[];
@@ -68,7 +69,7 @@ class App extends Component<object, AppState> {
       <div className={styles.appContainer}>
         <h1 className={styles.title}>Vehicle Explorer</h1>
         <Search onSearch={this.handleSearch} initialQuery={searchQuery} />
-        {loading && <p>Loading vehicles...</p>}
+        {loading && <Loader />}
         {error && <p className={styles.error}>{error}</p>}
         {initialized && <Main vehicles={vehicles} />}
       </div>
