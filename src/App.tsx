@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import { VehicleService, Vehicle } from './services/vehiclesService.ts';
 import styles from './App.module.css';
+import { Search } from './components/Search/Search.tsx';
+import { Main } from './components/Main/Main.tsx';
 
 interface AppState {
   vehicles: Vehicle[];
@@ -8,6 +10,7 @@ interface AppState {
   error: string | null;
   page: number;
   searchQuery: string;
+  initialized: boolean;
 }
 
 class App extends Component<object, AppState> {
@@ -21,6 +24,7 @@ class App extends Component<object, AppState> {
       error: null,
       page: 1,
       searchQuery: '',
+      initialized: false,
     };
 
     this.vehicleService = new VehicleService();
@@ -31,7 +35,7 @@ class App extends Component<object, AppState> {
   }
 
   loadVehicles = async () => {
-    const { page, searchQuery } = this.state;
+    const { page, searchQuery, initialized } = this.state;
     this.setState({ loading: true, error: null });
 
     try {
@@ -45,6 +49,10 @@ class App extends Component<object, AppState> {
         message = String(error);
       }
       this.setState({ error: message, loading: false });
+    } finally {
+      if (!initialized) {
+        this.setState({ initialized: true });
+      }
     }
   };
 
@@ -53,13 +61,15 @@ class App extends Component<object, AppState> {
   };
 
   render() {
-    const { loading, error } = this.state;
+    const { vehicles, loading, error, initialized } = this.state;
 
     return (
       <div className={styles.appContainer}>
         <h1 className={styles.title}>Vehicle Explorer</h1>
+        <Search onSearch={this.handleSearch} />
         {loading && <p>Loading vehicles...</p>}
         {error && <p className={styles.error}>{error}</p>}
+        {initialized && <Main vehicles={vehicles} />}
       </div>
     );
   }
