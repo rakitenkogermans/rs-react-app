@@ -22,6 +22,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Error', error, errorInfo);
   }
+  onClickTryAgain = () => {
+    window.location.reload();
+  };
 
   render() {
     const { hasError } = this.state;
@@ -30,6 +33,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       return (
         <div>
           <h1>Ooops... something went wrong!</h1>
+          <button onClick={this.onClickTryAgain}>Try again!</button>
         </div>
       );
     }
